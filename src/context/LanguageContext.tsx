@@ -1,0 +1,642 @@
+import React, { createContext, useContext, useState, useEffect } from 'react';
+
+export type Language = 'ar' | 'en';
+
+export const translations = {
+  ar: {
+    // Ministry & Header
+    initiativeTitle: 'مبادرة 100 مليون صحة',
+    republicBadge: 'الجمهورية الجديدة',
+    systemSubtitle: 'المنظومة الوطنية الموحدة لتسجيل وتتبع الحالات',
+    connectedHQ: 'متصل بالمقر الرئيسي',
+    offlineMode: 'وضع أوفلاين (غير متصل)',
+    syncNow: 'مزامنة',
+    toggleOfflineTitle: 'انقر للتغيير بين وضع الاتصال ووضع عدم الاتصال بالإنترنت',
+    toggleDarkMode: 'تبديل الوضع الليلي / الفاتح',
+    newPatient: 'تسجيل حالة جديدة',
+    inputScreen: 'شاشة الإدخال',
+    dashboard: 'لوحة المعلومات (Dashboard)',
+    searchAndRecords: 'البحث والسجل الشامل',
+    reportsAndExport: 'التقارير والتصدير',
+    auditLog: 'سجل التعديلات (Audit Log)',
+    todayGoal: 'هدف اليوم',
+    doctorName: 'د. أحمد محمود',
+    healthUnitName: 'وحدة الأمل الصحية',
+    
+    // Roles
+    roleSystemAdmin: 'مدير النظام',
+    roleDirectorateCoordinator: 'منسق الإدارة الصحية',
+    roleUnitCoordinator: 'منسق الوحدة',
+    roleDataEntry: 'مدخل بيانات',
+    roleReadOnly: 'قارئ فقط',
+
+    // Form Sections
+    section1Title: 'أولاً: البيانات الأساسية للمواطن',
+    section2Title: 'ثانياً: التاريخ المرضي والأمراض المزمنة',
+    section3Title: 'ثالثاً: نتائج التحاليل والقياسات المعملية',
+    section4Title: 'رابعاً: التقييم النهائي والإحالة للمستشفى',
+    section5Title: 'خامساً: الفريق الطبي المسؤول',
+
+    // Form Fields
+    serialNumber: 'المسلسل',
+    nationalId: 'الرقم القومي (14 رقم)',
+    fullName: 'الاسم رباعي',
+    phoneNumber: 'رقم الهاتف',
+    age: 'السن',
+    yearsOld: 'عام',
+    birthDate: 'تاريخ الميلاد',
+    gender: 'النوع',
+    male: 'ذكر',
+    female: 'أنثى',
+    residencyType: 'نوع الإقامة',
+    urban: 'حضر',
+    rural: 'ريف',
+    healthUnit: 'الوحدة الصحية',
+    villageOrDistrict: 'القرية / المنطقة',
+    serviceLocation: 'مكان تقديم الخدمة',
+    registrationDate: 'تاريخ التسجيل',
+    nationalIdExtractedNotice: 'تم استخراج السن وتاريخ الميلاد والمحافظة تلقائياً من الرقم القومي',
+    invalidNationalId: 'الرقم القومي يجب أن يتكون من 14 رقماً صحيحاً',
+
+    // Medical History Checkboxes
+    hypertension: 'ضغط الدم (Hypertension)',
+    diabetes: 'السكري (Diabetes)',
+    heartDisease: 'أمراض القلب (Heart Disease)',
+    stroke: 'سكتة دماغية (Stroke)',
+    liverDisease: 'أمراض الكبد (Liver Disease)',
+    kidneyDisease: 'أمراض الكلى (Kidney Disease)',
+    chestDisease: 'أمراض الصدر (Chest Disease)',
+    osteoporosis: 'هشاشة عظام (Osteoporosis)',
+    hearingLoss: 'ضعف السمع (Hearing Loss)',
+    visionLoss: 'ضعف إبصار (Vision Loss)',
+    memoryDisorder: 'اضطراب الذاكرة (Memory Disorder)',
+    depression: 'اكتئاب (Depression)',
+    recurrentFalls: 'سقوط متكرر (Recurrent Falls)',
+    incontinence: 'سلس البول (Urinary Incontinence)',
+    malnutrition: 'سوء التغذية (Malnutrition)',
+
+    // Labs & Vitals
+    bloodPressure: 'ضغط الدم (انقباضي / انبساطي)',
+    systolicBP: 'الضغط الانقباضي',
+    diastolicBP: 'الضغط الانبساطي',
+    bloodGlucose: 'السكر العشوائي (mg/dL)',
+    totalCholesterol: 'الكوليسترول الكلي TC (mg/dL)',
+    triglycerides: 'الدهون الثلاثية TG (mg/dL)',
+    hdlCholesterol: 'الكوليسترول النافع HDL',
+    ldlCholesterol: 'الكوليسترول الضار LDL',
+    gfr: 'معدل ترشيح الكلى GFR',
+    creatinine: 'الكرياتينين Cr (mg/dL)',
+    hemoglobin: 'الهيموجلوبين Hgb (g/dL)',
+    weightKg: 'الوزن (كجم)',
+    heightCm: 'الطول (سم)',
+    bmiIndex: 'مؤشر كتلة الجسم (BMI)',
+
+    // Risk & Referrals
+    riskAssessmentLevel: 'تصنيف الخطورة',
+    riskNormal: 'طبيعي',
+    riskFollowUp: 'يحتاج متابعة',
+    riskReferral: 'يحتاج تحويل',
+    referralDestinations: 'جهة الإحالة / التخصصات',
+    ophthalmology: 'رمد',
+    dental: 'أسنان',
+    internalMedicine: 'باطنة',
+    orthopedics: 'عظام',
+    physicalTherapy: 'علاج طبيعي',
+    psychiatry: 'نفسية',
+    otherSpecialty: 'أخرى',
+    referralReason: 'سبب وشكوى الإحالة',
+    referralDate: 'تاريخ الإحالة',
+
+    // Medical Team
+    examiningDoctor: 'اسم الطبيب الفاحص',
+    assistingNurse: 'الممرض المعاون',
+    labTechnician: 'فني المعمل',
+    healthEducator: 'المثقف الصحي',
+
+    // Action Buttons
+    saveRecord: 'حفظ وتسجيل البيانات',
+    printApprovedForm: 'طباعة النموذج المعتمد',
+    clearForm: 'تفريغ النموذج',
+
+    // Dashboard
+    kpiDashboardTitle: 'لوحة مؤشرات الأداء الحيوية (KPIs)',
+    kpiDashboardSubtitle: 'متابعة مباشرة وميدانية لنشاط الوحدات الصحية، معدلات التسجيل اليومي والشهرية، والتوزيع التخصصي للإحالات.',
+    achievementRate: 'نسبة إنجاز المستهدف اليومي',
+    totalCases: 'إجمالي الحالات',
+    casesInDatabase: 'حالة بسجلات المنظومة',
+    todayCases: 'حالات اليوم',
+    registeredToday: 'مسجلة اليوم حتى الآن',
+    monthlyCases: 'حالات الشهر',
+    inCurrentMonth: 'في الشهر الحالي',
+    genderRatio: 'النوع (الذكور/الإناث)',
+    males: 'رجال',
+    females: 'إناث',
+    referredCases: 'الحالات المحولة',
+    transferredSpecialized: 'محولة للرعاية التخصصية',
+    topCausesAndUnits: 'أكثر الأسباب والوحدات',
+    dailyTrendChartTitle: 'معدل التسجيل اليومي للأسبوع الحالي',
+    monthlyTrendChartTitle: 'المسار الشهري للحالات المحولة مقابل الإجمالي',
+    unitComparisonChartTitle: 'توزيع الحالات حسب الوحدة الصحية',
+    diseasePrevalenceChartTitle: 'الأمراض الأكثر انتشاراً بين الحالات المسجلة',
+    casesWord: 'حالات',
+    registrationsWord: 'التسجيلات',
+    referredWord: 'المحولون',
+    last7Days: 'آخر 7 أيام',
+    year2026: 'عام 2026',
+
+    // Advanced Search
+    advancedSearchTitle: 'البحث المتقدم والتصنيف الشامل للسجلات',
+    resetFilters: 'إعادة ضبط الفلاتر',
+    searchByNationalId: 'ابحث بالرقم القومي...',
+    searchByName: 'ابحث بالاسم رباعي...',
+    searchByPhone: 'ابحث برقم التليفون...',
+    searchByUnit: 'اسم الوحدة الصحية...',
+    searchByVillage: 'القرية أو الحي...',
+    searchByDoctor: 'اسم الطبيب...',
+    allClassifications: 'جميع التصنيفات',
+    dateRange: 'الفترة من - إلى',
+    searchResults: 'نتائج البحث:',
+    matchingCases: 'حالة مطابقة',
+    exportCsv: 'تصدير CSV',
+    exportExcelDirectorate: 'تصدير إكسيل للإدارة',
+    tableSerial: 'المسلسل',
+    tableNationalId: 'الرقم القومي',
+    tableName: 'الاسم رباعي',
+    tableAge: 'السن',
+    tableGender: 'النوع',
+    tableUnit: 'الوحدة الصحية',
+    tableBP: 'الضغط',
+    tableGlucose: 'السكر',
+    tableRisk: 'تقييم الخطورة',
+    tableReferral: 'جهة الإحالة',
+    tableDate: 'تاريخ التسجيل',
+    tableActions: 'الإجراءات',
+    noRecordsFound: 'لا توجد حالات مسجلة تنطبق عليها شروط البحث الحالية.',
+    confirmDeletePatient: 'هل أنت متأكد من حذف حالة المواطن',
+
+    // Reports Section
+    reportsTitle: 'مولد التقارير والإحصائيات المعتمدة للمديرية الصحية',
+    reportsSubtitle: 'إنشاء كشوف الإرسال الرسمية المجهزة للتصدير المباشر لمديرية الشؤون الصحية بالجيزة',
+    exportExcelForDirectorateBtn: 'تصدير إكسيل للمديرية',
+    printReportBtn: 'طباعة التقرير',
+    reportDaily: 'تقرير يومي',
+    reportWeekly: 'تقرير أسبوعي',
+    reportMonthly: 'تقرير شهري',
+    reportYearly: 'تقرير سنوي',
+    reportByUnit: 'توزيع الوحدات',
+    reportByDoctor: 'إنتاجية الأطباء',
+    reportByGender: 'حسب الجنس',
+    reportByAge: 'الفئات العمرية',
+    reportByReferrals: 'التحويلات والتخصصات',
+    filterByUnitLabel: 'فلترة بالوحدة:',
+    allUnits: 'جميع الوحدات',
+    officialHeaderCountry: 'جمهورية مصر العربية - وزارة الصحة والسكان',
+    officialHeaderDirectorate: 'مديرية الشؤون الصحية بالجيزة - إدارة 6 أكتوبر الصحية',
+    officialHeaderSystem: 'المنظومة الوطنية الموحدة لمبادرة 100 مليون صحة',
+    reportGeneratedDate: 'تاريخ استخراج التقرير:',
+    selectedUnitLabel: 'الوحدة المختارة:',
+    ageDistributionTitle: 'بيان التوزيع التكراري للفئات العمرية المستهدفة',
+    referralDetailsTitle: 'بيان تفصيلي بجهات التخصص والإحالات الصادرة للمستشفيات',
+    doctorProductivityTitle: 'بيان إنتاجية وحالات الفحص المسجلة لكل طبيب فاحص',
+    unitComparisonTitle: 'مقارنة الإنجاز والخطورة عبر الوحدات الصحية الميدانية',
+    registeredCasesLog: 'سجل تسليم الحالات المعتمد (إجمالي الحالات: ',
+    dataEntryOfficerSign: 'مدخل البيانات المسؤول',
+    unitCoordinatorSign: 'منسق المبادرة بالوحدة الصحية',
+    directorSign: 'مدير الإدارة الصحية والخاتم',
+    signatureLine: 'التوقيع: .....................',
+
+    // Audit Log Modal
+    auditLogTitle: 'سجل التعديلات والأنشطة الرقمية (Audit Log)',
+    auditLogSubtitle: 'تتبع زمني لكافة عمليات إدخال الحالات، التعديل، التصدير والطباعة بالمنظومة',
+    documentedActions: 'إجراء موثق',
+    timestampCol: 'الوقت والتاريخ',
+    userNameCol: 'اسم المستخدم',
+    userRoleCol: 'الصلاحية',
+    actionCol: 'الإجراء',
+    patientOrSerialCol: 'اسم المواطن / المسلسل',
+    detailsCol: 'تفاصيل العمليات',
+    noAuditLogs: 'لا توجد سجلات تعديل حتى الآن.',
+    actionCreated: 'إنشاء',
+    actionUpdated: 'تحديث',
+    actionExported: 'تصدير',
+    actionPrinted: 'طباعة',
+    actionDeleted: 'حذف',
+
+    // Printable Form Modal
+    previewApprovedForm: 'معاينة النموذج الورقي المعتمد للسجل اليومي',
+    printApprovedFormBtn: 'طباعة الاستمارة المعتمدة',
+    ministrySector: 'قطاع الرعاية الصحية الأساسية والتمريض',
+    formTitle: 'مبادرة رئيس الجمهورية "100 مليون صحة" - استمارة الفحص الطبي للمواطن',
+    section1PaperHeader: 'أولاً: البيانات الأساسية للمواطن',
+    section2PaperHeader: 'ثانياً: التاريخ المرضي والأمراض المزمنة',
+    section3PaperHeader: 'ثالثاً: نتائج التحاليل والقياسات المعملية',
+    section4PaperHeader: 'رابعاً: التقييم النهائي والإحالة للمستشفى',
+    unitStamp: 'خاتم الوحدة الصحية',
+
+    // Footer
+    connectedCentralServer: 'متصل بالخادم الموحد لوزارة الصحة والسكان',
+    healthDeptName: 'الإدارة: إدارة 6 أكتوبر الصحية',
+    totalRecordsFooter: 'إجمالي الحالات بالسجل:',
+    lastSyncedFooter: 'آخر مزامنة: منذ لحظات',
+
+    // Custom Report Filters & Presets
+    customFiltersTitle: 'الفلاتر المحفوظة والتقارير المخصصة',
+    saveCurrentFilterAsPreset: 'حفظ الفلتر الحالي كقالب تقرير',
+    savedPresets: 'قوالب التقارير المتكررة السريعة',
+    presetName: 'اسم الفلتر / التقرير المخصص',
+    presetNamePlaceholder: 'مثال: مرضى ضغط الدم الشهري',
+    filterCondition: 'الحالة / المرض المستهدف',
+    filterRiskLevel: 'مستوى الخطورة',
+    filterGender: 'النوع',
+    filterTimeframe: 'الإطار الزمني',
+    allConditions: 'جميع الأمراض',
+    allGenders: 'جميع الأجناس',
+    allRiskLevels: 'جميع المستويات',
+    timeframeAll: 'جميع الأوقات',
+    timeframeCurrentMonth: 'الشهر الحالي',
+    timeframeCurrentWeek: 'الأسبوع الحالي',
+    timeframeCurrentYear: 'السنة الحالية',
+    savePresetBtn: 'حفظ القالب',
+    cancelPresetBtn: 'إلغاء',
+    activeFilterLabel: 'الفلتر المخصص النشط:',
+    clearActiveFilter: 'إلغاء الفلتر',
+    deletePresetConfirm: 'هل أنت متأكد من حذف هذا الفلتر المحفوظ؟',
+    presetHypertensionMonthly: 'مرضى ضغط الدم الشهري',
+    presetUrgentReferrals: 'حالات التحويل العاجل للمستشفيات',
+    presetDiabetesHeart: 'مرضى السكري والقلب',
+    presetDoctorProductivityMonthly: 'إنتاجية الأطباء الشهرية',
+    noSavedPresets: 'لا توجد فلاتر مخصصة محفوظة بعد.',
+
+    // Patient Profile & Chronological Timeline
+    patientProfileTitle: 'الملف الطبي الشامل للمواطن',
+    chronologicalTimeline: 'السجل الزمني المتسلسل للزيارات والفحوصات والإحالات',
+    timelineSubtitle: 'متابعة تاريخية متسلسلة كرونولوجياً لجميع الزيارات الميدانية والفحوصات المعملية والإحالات الطبية للمواطن',
+    visitHistoryHeader: 'التسلسل الزمني الكرونولوجي للزيارات',
+    addVisitBtn: 'تسجيل زيارة / فحص جديد',
+    labResultsTimeline: 'نتائج التحاليل والقياسات الحيوية والمعملية',
+    referralDetailsTimeline: 'تأكيد وجهات وسبب الإحالة الطبية',
+    viewTimelineTab: 'السجل الزمني والزيارات',
+    patientBasicInfoTab: 'البيانات الأساسية والديموغرافية',
+    medicalHistoryTab: 'التاريخ المرضي والأمراض المزمنة',
+    totalVisitsRecorded: 'إجمالي الزيارات المسجلة',
+    latestVisitDate: 'تاريخ أحدث زيارة',
+    initialVisitDate: 'الزيارة الافتتاحية الأولى',
+    trendBP: 'مؤشر ضغط الدم',
+    trendGlucose: 'مؤشر قياس السكر',
+    trendCholesterol: 'مؤشر الكوليسترول والدهون',
+    referralDestinationLabel: 'جهة الإحالة والمستشفى المستهدف',
+    doctorExaminingLabel: 'الطبيب الفاحص المسؤول',
+    noVisitsFound: 'لا توجد زيارات سابقة مسجلة لهذا المواطن.',
+    closeProfile: 'إغلاق الملف',
+
+    // Language Toggle
+    languageLabel: 'اللغة (Language)',
+    arabic: 'العربية',
+    english: 'English (إنجليزي)',
+    rtlNotice: 'العرض متوافق مع نمط RTL لضمان متابعة المراقبين والخبراء الأجانب',
+  },
+  en: {
+    // Ministry & Header
+    initiativeTitle: '100 Million Health Initiative',
+    republicBadge: 'New Republic',
+    systemSubtitle: 'Unified National System for Registration & Tracking',
+    connectedHQ: 'Connected to HQ',
+    offlineMode: 'Offline Mode',
+    syncNow: 'Sync Now',
+    toggleOfflineTitle: 'Click to toggle between Online and Offline connection mode',
+    toggleDarkMode: 'Toggle Light / Dark Mode',
+    newPatient: 'Register New Patient',
+    inputScreen: 'Registration Form',
+    dashboard: 'Dashboard (KPIs)',
+    searchAndRecords: 'Advanced Search & Records',
+    reportsAndExport: 'Reports & Export',
+    auditLog: 'Audit Log',
+    todayGoal: "Today's Target",
+    doctorName: 'Dr. Ahmed Mahmoud',
+    healthUnitName: 'El-Amal Health Unit',
+
+    // Roles
+    roleSystemAdmin: 'System Admin',
+    roleDirectorateCoordinator: 'Directorate Coordinator',
+    roleUnitCoordinator: 'Unit Coordinator',
+    roleDataEntry: 'Data Entry Specialist',
+    roleReadOnly: 'Read Only',
+
+    // Form Sections
+    section1Title: '1. Citizen Basic Information',
+    section2Title: '2. Medical History & Chronic Diseases',
+    section3Title: '3. Laboratory & Vitals Measurements',
+    section4Title: '4. Final Assessment & Hospital Referral',
+    section5Title: '5. Responsible Medical Team',
+
+    // Form Fields
+    serialNumber: 'Serial Number',
+    nationalId: 'National ID (14 Digits)',
+    fullName: 'Full Name (4 Names)',
+    phoneNumber: 'Phone Number',
+    age: 'Age',
+    yearsOld: 'years',
+    birthDate: 'Date of Birth',
+    gender: 'Gender',
+    male: 'Male',
+    female: 'Female',
+    residencyType: 'Residency Type',
+    urban: 'Urban',
+    rural: 'Rural',
+    healthUnit: 'Health Unit',
+    villageOrDistrict: 'Village / District',
+    serviceLocation: 'Service Location',
+    registrationDate: 'Registration Date',
+    nationalIdExtractedNotice: 'Age, DOB, and Governorate automatically extracted from National ID',
+    invalidNationalId: 'National ID must consist of exactly 14 valid digits',
+
+    // Medical History Checkboxes
+    hypertension: 'Hypertension',
+    diabetes: 'Diabetes Mellitus',
+    heartDisease: 'Heart Disease',
+    stroke: 'Stroke History',
+    liverDisease: 'Liver Disease',
+    kidneyDisease: 'Kidney Disease',
+    chestDisease: 'Chest / Respiratory Disease',
+    osteoporosis: 'Osteoporosis',
+    hearingLoss: 'Hearing Impairment',
+    visionLoss: 'Vision Impairment',
+    memoryDisorder: 'Memory Disorder',
+    depression: 'Depression',
+    recurrentFalls: 'Recurrent Falls',
+    incontinence: 'Urinary Incontinence',
+    malnutrition: 'Malnutrition',
+
+    // Labs & Vitals
+    bloodPressure: 'Blood Pressure (Systolic / Diastolic)',
+    systolicBP: 'Systolic BP',
+    diastolicBP: 'Diastolic BP',
+    bloodGlucose: 'Blood Glucose (mg/dL)',
+    totalCholesterol: 'Total Cholesterol TC (mg/dL)',
+    triglycerides: 'Triglycerides TG (mg/dL)',
+    hdlCholesterol: 'HDL Cholesterol',
+    ldlCholesterol: 'LDL Cholesterol',
+    gfr: 'Kidney GFR Rate',
+    creatinine: 'Serum Creatinine Cr (mg/dL)',
+    hemoglobin: 'Hemoglobin Hgb (g/dL)',
+    weightKg: 'Weight (kg)',
+    heightCm: 'Height (cm)',
+    bmiIndex: 'BMI Index',
+
+    // Risk & Referrals
+    riskAssessmentLevel: 'Risk Assessment Level',
+    riskNormal: 'Normal',
+    riskFollowUp: 'Follow-up Required',
+    riskReferral: 'Hospital Referral Needed',
+    referralDestinations: 'Referral Specialties',
+    ophthalmology: 'Ophthalmology',
+    dental: 'Dental',
+    internalMedicine: 'Internal Medicine',
+    orthopedics: 'Orthopedics',
+    physicalTherapy: 'Physical Therapy',
+    psychiatry: 'Psychiatry',
+    otherSpecialty: 'Other Specialty',
+    referralReason: 'Referral Reason / Chief Complaint',
+    referralDate: 'Referral Date',
+
+    // Medical Team
+    examiningDoctor: 'Examining Physician',
+    assistingNurse: 'Assisting Nurse',
+    labTechnician: 'Lab Technician',
+    healthEducator: 'Health Educator',
+
+    // Action Buttons
+    saveRecord: 'Save Patient Record',
+    printApprovedForm: 'Print Approved Form',
+    clearForm: 'Clear Form',
+
+    // Dashboard
+    kpiDashboardTitle: 'Key Performance Indicators (KPIs) Dashboard',
+    kpiDashboardSubtitle: 'Real-time field tracking for health unit performance, daily/monthly registration throughput, and referral distribution.',
+    achievementRate: 'Daily Target Completion Rate',
+    totalCases: 'Total Cases',
+    casesInDatabase: 'cases in system registry',
+    todayCases: "Today's Cases",
+    registeredToday: 'registered today so far',
+    monthlyCases: 'Monthly Cases',
+    inCurrentMonth: 'in current month',
+    genderRatio: 'Gender (Male / Female)',
+    males: 'Males',
+    females: 'Females',
+    referredCases: 'Referred Cases',
+    transferredSpecialized: 'referred for specialized care',
+    topCausesAndUnits: 'Top Prevalence & Health Unit',
+    dailyTrendChartTitle: 'Daily Registration Rate (Current Week)',
+    monthlyTrendChartTitle: 'Monthly Registration vs. Hospital Referrals',
+    unitComparisonChartTitle: 'Patient Distribution by Health Unit',
+    diseasePrevalenceChartTitle: 'Most Prevalent Conditions Among Registered Cases',
+    casesWord: 'Cases',
+    registrationsWord: 'Registrations',
+    referredWord: 'Referred',
+    last7Days: 'Last 7 Days',
+    year2026: 'Year 2026',
+
+    // Advanced Search
+    advancedSearchTitle: 'Advanced Search & Comprehensive Filter',
+    resetFilters: 'Reset Filters',
+    searchByNationalId: 'Search by National ID...',
+    searchByName: 'Search by Full Name...',
+    searchByPhone: 'Search by Phone...',
+    searchByUnit: 'Health Unit Name...',
+    searchByVillage: 'Village / District...',
+    searchByDoctor: 'Doctor Name...',
+    allClassifications: 'All Classifications',
+    dateRange: 'Date Range (From - To)',
+    searchResults: 'Search Results:',
+    matchingCases: 'matching cases',
+    exportCsv: 'Export CSV',
+    exportExcelDirectorate: 'Export Excel for Directorate',
+    tableSerial: 'Serial #',
+    tableNationalId: 'National ID',
+    tableName: 'Full Name',
+    tableAge: 'Age',
+    tableGender: 'Gender',
+    tableUnit: 'Health Unit',
+    tableBP: 'BP',
+    tableGlucose: 'Glucose',
+    tableRisk: 'Risk Assessment',
+    tableReferral: 'Referral Specialty',
+    tableDate: 'Date Registered',
+    tableActions: 'Actions',
+    noRecordsFound: 'No records found matching the current search criteria.',
+    confirmDeletePatient: 'Are you sure you want to delete patient record',
+
+    // Reports Section
+    reportsTitle: 'Approved Health Directorate Reports & Statistics Generator',
+    reportsSubtitle: 'Generate official transmission sheets formatted for Giza Health Affairs Directorate',
+    exportExcelForDirectorateBtn: 'Export Excel for Directorate',
+    printReportBtn: 'Print Official Report',
+    reportDaily: 'Daily Report',
+    reportWeekly: 'Weekly Report',
+    reportMonthly: 'Monthly Report',
+    reportYearly: 'Yearly Report',
+    reportByUnit: 'Unit Breakdown',
+    reportByDoctor: 'Doctor Productivity',
+    reportByGender: 'Gender Breakdown',
+    reportByAge: 'Age Groups',
+    reportByReferrals: 'Referrals & Specialties',
+    filterByUnitLabel: 'Filter by Unit:',
+    allUnits: 'All Health Units',
+    officialHeaderCountry: 'Arab Republic of Egypt - Ministry of Health & Population',
+    officialHeaderDirectorate: 'Giza Health Affairs Directorate - 6th of October Health Dept.',
+    officialHeaderSystem: 'National Unified System for 100 Million Health Initiative',
+    reportGeneratedDate: 'Report Generated Date:',
+    selectedUnitLabel: 'Selected Unit:',
+    ageDistributionTitle: 'Frequency Distribution of Target Age Groups',
+    referralDetailsTitle: 'Detailed Breakdown of Hospital Referrals & Specialties',
+    doctorProductivityTitle: 'Examined Cases Productivity per Physician',
+    unitComparisonTitle: 'Achievement and Risk Level Comparison Across Health Units',
+    registeredCasesLog: 'Approved Patient Registration Log (Total Cases: ',
+    dataEntryOfficerSign: 'Data Entry Officer',
+    unitCoordinatorSign: 'Initiative Unit Coordinator',
+    directorSign: 'Directorate Manager & Stamp',
+    signatureLine: 'Signature: .....................',
+
+    // Audit Log Modal
+    auditLogTitle: 'Audit Log & Digital Activity Record',
+    auditLogSubtitle: 'Chronological tracking of all patient data entries, edits, exports, and prints',
+    documentedActions: 'Documented Actions',
+    timestampCol: 'Date & Time',
+    userNameCol: 'User Name',
+    userRoleCol: 'User Role',
+    actionCol: 'Action',
+    patientOrSerialCol: 'Patient Name / Serial',
+    detailsCol: 'Operation Details',
+    noAuditLogs: 'No audit logs recorded yet.',
+    actionCreated: 'Create',
+    actionUpdated: 'Update',
+    actionExported: 'Export',
+    actionPrinted: 'Print',
+    actionDeleted: 'Delete',
+
+    // Printable Form Modal
+    previewApprovedForm: 'Approved Daily Record Paper Form Preview',
+    printApprovedFormBtn: 'Print Approved Form',
+    ministrySector: 'Primary Healthcare & Nursing Sector',
+    formTitle: 'Presidential Initiative "100 Million Health" - Citizen Medical Exam Form',
+    section1PaperHeader: '1. Citizen Basic Data',
+    section2PaperHeader: '2. Medical History & Chronic Diseases',
+    section3PaperHeader: '3. Laboratory & Vitals Results',
+    section4PaperHeader: '4. Final Risk Assessment & Hospital Referral',
+    unitStamp: 'Health Unit Stamp',
+
+    // Footer
+    connectedCentralServer: 'Connected to Ministry of Health Unified Central Server',
+    healthDeptName: 'Department: 6th of October Health Dept.',
+    totalRecordsFooter: 'Total Records in System:',
+    lastSyncedFooter: 'Last Synced: Just now',
+
+    // Custom Report Filters & Presets
+    customFiltersTitle: 'Saved Filters & Custom Report Presets',
+    saveCurrentFilterAsPreset: 'Save Current Filter as Preset',
+    savedPresets: 'Quick Recurring Report Presets',
+    presetName: 'Filter / Preset Name',
+    presetNamePlaceholder: 'e.g., Monthly Hypertension Patients',
+    filterCondition: 'Target Condition / Disease',
+    filterRiskLevel: 'Risk Assessment Level',
+    filterGender: 'Gender',
+    filterTimeframe: 'Timeframe',
+    allConditions: 'All Conditions',
+    allGenders: 'All Genders',
+    allRiskLevels: 'All Risk Levels',
+    timeframeAll: 'All Time',
+    timeframeCurrentMonth: 'Current Month',
+    timeframeCurrentWeek: 'Current Week',
+    timeframeCurrentYear: 'Current Year',
+    savePresetBtn: 'Save Preset',
+    cancelPresetBtn: 'Cancel',
+    activeFilterLabel: 'Active Custom Filter:',
+    clearActiveFilter: 'Clear Filter',
+    deletePresetConfirm: 'Are you sure you want to delete this saved filter preset?',
+    presetHypertensionMonthly: 'Monthly Hypertension Patients',
+    presetUrgentReferrals: 'Urgent Hospital Referrals',
+    presetDiabetesHeart: 'Diabetes & Heart Patients',
+    presetDoctorProductivityMonthly: 'Monthly Doctor Productivity',
+    noSavedPresets: 'No custom report filters saved yet.',
+
+    // Patient Profile & Chronological Timeline
+    patientProfileTitle: 'Comprehensive Patient Medical Profile',
+    chronologicalTimeline: 'Chronological Visit & Referral Timeline',
+    timelineSubtitle: 'Historical step-by-step timeline of all patient visits, lab test results, and referrals',
+    visitHistoryHeader: 'Chronological Visit History',
+    addVisitBtn: 'Add New Visit Record',
+    labResultsTimeline: 'Lab Test Results & Vitals',
+    referralDetailsTimeline: 'Referral Destination & Notes',
+    viewTimelineTab: 'Chronological Timeline',
+    patientBasicInfoTab: 'Personal Info',
+    medicalHistoryTab: 'Medical Conditions',
+    totalVisitsRecorded: 'Total Visits Recorded',
+    latestVisitDate: 'Latest Visit Date',
+    initialVisitDate: 'Initial Visit Date',
+    trendBP: 'Blood Pressure Trend',
+    trendGlucose: 'Blood Glucose Trend',
+    trendCholesterol: 'Lipid Profile Trend',
+    referralDestinationLabel: 'Referral Destination & Hospital',
+    doctorExaminingLabel: 'Attending Physician',
+    noVisitsFound: 'No previous visit records found for this patient.',
+    closeProfile: 'Close Profile',
+
+    // Language Toggle
+    languageLabel: 'Language',
+    arabic: 'العربية',
+    english: 'English',
+    rtlNotice: 'RTL orientation preserved for international medical observers',
+  },
+};
+
+interface LanguageContextType {
+  language: Language;
+  setLanguage: (lang: Language) => void;
+  t: (key: keyof typeof translations.ar) => string;
+}
+
+const LanguageContext = createContext<LanguageContextType>({
+  language: 'ar',
+  setLanguage: () => {},
+  t: (key) => translations.ar[key] || key,
+});
+
+export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const [language, setLanguageState] = useState<Language>(() => {
+    try {
+      const saved = localStorage.getItem('seha_100m_lang');
+      if (saved === 'en' || saved === 'ar') return saved;
+    } catch (e) {
+      console.error('Error reading language from localStorage', e);
+    }
+    return 'ar';
+  });
+
+  const setLanguage = (lang: Language) => {
+    setLanguageState(lang);
+    try {
+      localStorage.setItem('seha_100m_lang', lang);
+    } catch (e) {
+      console.error('Error saving language to localStorage', e);
+    }
+  };
+
+  useEffect(() => {
+    // Keep dir="rtl" always on the <html> element as explicitly required:
+    // "مع الحفاظ على اتجاه RTL لضمان سهولة الاستخدام للمراقبين الدوليين أو الأطباء الأجانب"
+    document.documentElement.setAttribute('dir', 'rtl');
+    document.documentElement.setAttribute('lang', language);
+  }, [language]);
+
+  const t = (key: keyof typeof translations.ar): string => {
+    return translations[language]?.[key] || translations.ar[key] || key;
+  };
+
+  return (
+    <LanguageContext.Provider value={{ language, setLanguage, t }}>
+      {children}
+    </LanguageContext.Provider>
+  );
+};
+
+export const useLanguage = () => useContext(LanguageContext);

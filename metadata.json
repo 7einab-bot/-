@@ -1,0 +1,6 @@
+{
+  "name": "مبادرة 100 مليون صحة - منظومة تسجيل الحالات",
+  "description": "النظام الوطني الموحد لتسجيل حالات مبادرة 100 مليون صحة، إدارة الفحوصات الطبية، الإحالات والتقارير للإدارات الصحية",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

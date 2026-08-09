@@ -1,0 +1,41 @@
+{
+  "entities": {
+    "patientRecords": {
+      "title": "Patient Record",
+      "description": "Patient health records for 100 Million Seha national health initiative",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "serialNumber": { "type": "string" },
+        "fullName": { "type": "string" },
+        "nationalId": { "type": "string" },
+        "phone": { "type": "string font" },
+        "registrationDate": { "type": "string" },
+        "gender": { "type": "string" },
+        "age": { "type": "number" },
+        "healthUnit": { "type": "string" },
+        "riskAssessment": { "type": "string" },
+        "syncStatus": { "type": "string" },
+        "createdById": { "type": "string" },
+        "updatedAt": { "type": "string" }
+      },
+      "required": ["id", "fullName", "nationalId", "registrationDate"]
+    },
+    "auditLogs": {
+      "title": "Audit Log",
+      "description": "System audit log items",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "recordId": { "type": "string" },
+        "patientName": { "type": "string" },
+        "action": { "type": "string" },
+        "userRole": { "type": "string" },
+        "userName": { "type": "string" },
+        "timestamp": { "type": "string" },
+        "details": { "type": "string" }
+      },
+      "required": ["id", "action", "timestamp"]
+    }
+  }
+}
